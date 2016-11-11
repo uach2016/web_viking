@@ -4,4 +4,6 @@ ShopifyApp.configure do |config|
   config.secret = "e8dcdaac25090392bde55f7d46ca515d"
   config.scope = "read_orders, read_products"
   config.embedded_app = true
+
+  
 end

@@ -29,6 +29,8 @@ gem 'httparty', '~> 0.14.0'
 
 gem 'shopify_app'
 gem 'activeresource', github: 'rails/activeresource'
+
+gem 'rest-client', '~> 2.0'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password

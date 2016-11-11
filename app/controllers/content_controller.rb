@@ -23,6 +23,6 @@ class ContentController < ApplicationController
     puts response.inspect
 
     @domain.market_goo_guid = response.body
-    @domain.save
+    @domain.market_goo_guid.save
   end
 end

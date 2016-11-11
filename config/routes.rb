@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  get 'content/create_domain'
+  get 'home/create'
+  post 'home/delete', as: 'delete'
 
   root :to => 'home#index'
   mount ShopifyApp::Engine, at: '/'

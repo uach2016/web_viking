@@ -4,14 +4,14 @@ class HomeController < ShopifyApp::AuthenticatedController
 
   def index
     @products = ShopifyAPI::Product.find(:all, params: { limit: 10 })
-    @shop = ShopifyAPI::Shop.current
   end
 
   def create 
+    @shop = ShopifyAPI::Shop.current
   	# Check if shop not exist in dbase
 		if !Shop.exists?(:shopify_id => @shop.id)
 	  # Create it
-	 	@newshop = Shop.create({domain: @shop.domain, name: current_user.name, email: @shop.email, promo: ''})
+	 	@newshop = Shop.create({shopify_domain: @shop.domain, name: current_user.name, email: @shop.email, promo: ''})
 
     #we need to post to this address, that will give us a response which is the MARKETGOO ID
     response = RestClient.post 'http://webviking.stage.mktgoo.net/api/accounts', params, :'X-Auth-Token' => "1bb6343e8153b342f346b9559938cdb0d927a8ed"
@@ -28,9 +28,8 @@ class HomeController < ShopifyApp::AuthenticatedController
 	end
 
 	def delete
-		shop_domain = @shop.domain
 		access_token = 'secret'
-		revoke_url   = 'https://'+shop+'/admin/api_permissions/current.json'
+		revoke_url   = 'https://'+@shop.domain+'/admin/api_permissions/current.json'
 
 		headers = {
 		  'X-Shopify-Access-Token' => access_token,
@@ -49,8 +48,9 @@ class HomeController < ShopifyApp::AuthenticatedController
   end
 
   def login_link
-   @shop = Shop.new
-   RestClient::Request.execute(method: :get, url: "webviking.stage.mktgoo.net/api/login/#{@shop.market_goo_guid}", :headers => {"X-Auth-Token"=> "1bb6343e8153b342f346b9559938cdb0d927a8ed"}) do |response, request, result, &block|
+   @shop = ShopifyAPI::Shop.current
+   new_shop = Shop.new(shopify_domain: "#{@shop.domain}")
+   RestClient::Request.execute(method: :get, url: "webviking.stage.mktgoo.net/api/login/#{new_shop.market_goo_id}", :headers => {"X-Auth-Token"=> "1bb6343e8153b342f346b9559938cdb0d927a8ed"}) do |response, request, result, &block|
      if [301, 302, 307].include? response.code
        redirected_url = response.headers[:location]
        redirect_to redirected_url
@@ -61,4 +61,3 @@ class HomeController < ShopifyApp::AuthenticatedController
  end
 
 end
-
